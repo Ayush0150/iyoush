@@ -1,0 +1,271 @@
+:root {
+  /* Background: Apple-inspired deep blacks */
+  --bg-deep: #000000;
+  --bg-surface: #0a0a0a;
+
+  /* Refined Frosted Glass (Apple-style) */
+  --glass-bg: rgba(28, 28, 30, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+
+  /* Accent Palette — warm gold + cool silver */
+  --gold-primary: #d4a853;
+  --gold-glow: rgba(212, 168, 83, 0.2);
+  --cyan-accent: #64d2ff;
+
+  /* Typography — Apple-caliber contrast */
+  --text-pure: #f5f5f7;
+  --text-muted: #86868b;
+  --text-dim: #48484a;
+
+  /* Blur Tokens */
+  --liquid-blur: blur(24px) saturate(180%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-pure);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(
+    circle,
+    rgba(100, 210, 255, 0.08) 0%,
+    rgba(212, 168, 83, 0.05) 40%,
+    transparent 70%
+  );
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+  animation: floatGlow 12s ease-in-out infinite alternate;
+}
+@keyframes floatGlow {
+  0% {
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    transform: translateX(-48%) translateY(40px);
+  }
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--liquid-blur);
+  -webkit-backdrop-filter: var(--liquid-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.05);
+}
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-pure);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+}
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+}
+.glass-button:active {
+  transform: translateY(0) scale(0.98);
+}
+.gradient-gold {
+  background: linear-gradient(135deg, #f5e6b8 0%, #d4a853 50%, #a67c2e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================
+   FLOATING APPLE NAVBAR DOCK
+   ========================================================== */
+.navbar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  pointer-events: none;
+  perspective: 1400px;
+}
+
+.navbar-dock {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 16px 10px 24px;
+  border-radius: 9999px;
+  max-width: 840px;
+  width: 100%;
+  transition:
+    background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.navbar-dock:active {
+  cursor: grabbing;
+}
+
+/* Enhanced frosted glass on scroll */
+.navbar-dock.dock-scrolled {
+  padding: 8px 14px 8px 20px;
+  background: rgba(28, 28, 30, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 40px -8px rgba(0, 0, 0, 0.75),
+    inset 0 0.5px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Brand Logo */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #30d158;
+  box-shadow: 0 0 8px rgba(48, 209, 88, 0.6);
+  animation: pulseRadar 2s infinite;
+}
+
+@keyframes pulseRadar {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+/* Navigation Links List */
+.nav-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 2px;
+}
+
+.nav-link {
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  border-radius: 9999px;
+  transition: color 0.25s ease, background 0.25s ease;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--text-pure);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-cta {
+  padding: 8px 18px;
+  font-size: 0.8rem;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================
+   RUBBER-BAND STRETCH VISUAL FEEDBACK
+   ========================================================== */
+
+/* Subtle inner glow when dock is being stretched */
+.navbar-dock::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212, 168, 83, 0.06) 0%,
+    transparent 70%
+  );
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.navbar-dock:active::before {
+  opacity: 1;
+}
+
+/* Outer glow ring during stretch */
+.navbar-dock::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+  pointer-events: none;
+}
+
+.navbar-dock:active::after {
+  border-color: rgba(212, 168, 83, 0.12);
+}

@@ -1,0 +1,30 @@
+{
+  // Disable inline AI ghost-text completions
+  "editor.inlineSuggest.enabled": false,
+  "editor.inlineSuggest.showToolbar": "never",
+  "editor.suggest.preview": false,
+
+  // Disable Error Lens inline red text and error banners
+  "errorLens.enabled": false,
+
+  // Classical IntelliSense dropdown suggestions (functions, methods, properties, attributes)
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.suggest.showWords": true,
+  "editor.suggest.showMethods": true,
+  "editor.suggest.showFunctions": true,
+  "editor.suggest.showProperties": true,
+  "editor.suggest.showVariables": true,
+  "editor.suggest.showClasses": true,
+  "editor.suggest.showKeywords": true,
+  "editor.suggest.showConstants": true,
+  "editor.suggest.showFields": true,
+  "editor.suggest.showInterfaces": true,
+  "editor.suggest.showSnippets": true,
+  "javascript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.completeFunctionCalls": true
+}
