@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import ThemeToggle from "./ThemeToggle";
 import PlayButton from "./PlayButton";
 import SearchButton from "./SearchButton";
+import IdBadge from "./IdBadge";
+import { playTickSound } from "../utils/sound";
 
 
 const navLinks = [
@@ -50,6 +52,54 @@ export default function Navbar() {
   // State: Remembers whether the user has scrolled down the page
   const [scrolled, setScrolled] = useState(false);
 
+  // State: Controls whether the 3D Lanyard ID Badge is dropped
+  const [isBadgeOpen, setIsBadgeOpen] = useState(false);
+
+  // Horizontal position between "Connect" button and "Play" button
+  const [badgeX, setBadgeX] = useState(null);
+  // Exact visual dead-center of the open space to the left of the navbar dock
+  const [leftX, setLeftX] = useState(null);
+
+  const updateBadgePosition = useCallback(() => {
+    const dockEl = dockRef.current || document.querySelector(".navbar-dock");
+    const rightControlsEl = document.querySelector(".nav-extra-right");
+    if (dockEl) {
+      const dockRect = dockEl.getBoundingClientRect();
+      // True visual dead-center of the open space to the left of the navbar dock
+      // Maintain at least 175px clearance so the 330px centered card has clean left margins
+      const leftMid = Math.max(175, dockRect.left / 2);
+      setLeftX(leftMid);
+
+      if (rightControlsEl) {
+        const rightRect = rightControlsEl.getBoundingClientRect();
+        // Exact visual dead-center between the navbar dock's right edge and the right controls (Theme/Search)
+        const mid = (dockRect.right + rightRect.left) / 2;
+        setBadgeX(mid);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    updateBadgePosition();
+    // Re-measure after navbar entrance animation settles
+    const primeTimer = setTimeout(updateBadgePosition, 950);
+    window.addEventListener("resize", updateBadgePosition);
+    return () => {
+      clearTimeout(primeTimer);
+      window.removeEventListener("resize", updateBadgePosition);
+    };
+  }, [updateBadgePosition]);
+
+  // Auto-drop the ID badge 2 seconds after website loads with butter-smooth motion
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateBadgePosition();
+      setIsBadgeOpen(true);
+      playTickSound();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [updateBadgePosition]);
+
   // References for interactive snake beam tracking
   const dockRef = useRef(null);
   const snakeRef = useRef(null);
@@ -64,17 +114,17 @@ export default function Navbar() {
   // Raw drag offset
   const rawStretch = useMotionValue(0);
 
-  // Springy value that snaps back with satisfying overshoot bounce
+  // Springy value that snaps back with velvety fluid cushion
   const stretchY = useSpring(rawStretch, {
-    stiffness: 300,
-    damping: 10,
-    mass: 0.4,
+    stiffness: 180,
+    damping: 22,
+    mass: 0.6,
   });
 
-  // Map drag → 3D bend transforms (NO size change — only rotation in 3D space)
-  const rotateX = useTransform(stretchY, [-60, 0, 60], [25, 0, -25]);
-  const rotateZ = useTransform(stretchY, [-60, 0, 60], [-2, 0, 2]);
-  const translateY = useTransform(stretchY, [-60, 0, 60], [-3, 0, 3]);
+  // Map drag → subtle 3D bend transforms (NO size change — smooth silicone flex)
+  const rotateX = useTransform(stretchY, [-50, 0, 50], [10, 0, -10]);
+  const rotateZ = useTransform(stretchY, [-50, 0, 50], [-1.2, 0, 1.2]);
+  const translateY = useTransform(stretchY, [-50, 0, 50], [-3, 0, 3]);
 
   const handlePointerDown = useCallback(
     (e) => {
@@ -186,100 +236,145 @@ export default function Navbar() {
 
   return (
     <header className="navbar-wrapper">
-      <motion.nav
-        ref={dockRef}
-        /* --- Clockwise horizontal 360° spin entrance --- */
-        initial={{ rotateY: 360, opacity: 0, y: -30, scale: 0.94 }}
-        animate={{ rotateY: 0, opacity: 1, y: 0, scale: 1 }}
-        transition={{
-          rotateY: { duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] },
-          opacity: { duration: 0.5, delay: 0.1, ease: "easeOut" },
-          y: { duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] },
-          scale: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
-        }}
-        /* --- Rubber-band BEND transforms (size stays constant) --- */
-        style={{
-          rotateX,
-          rotateZ,
-          y: translateY,
-          transformOrigin: "center center",
-          transformStyle: "preserve-3d",
-        }}
-        className={`navbar-dock glass-panel ${scrolled ? "dock-scrolled" : ""}`}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
-        onPointerEnter={handlePointerEnter}
+      {/* Search and Play music controls placed outside navbar in the open space before "iyoush" */}
+      <div
+        className="nav-extra-left"
+        style={leftX ? { left: `${leftX}px`, transform: "translate(-50%, -50%)" } : {}}
       >
-        {/* Luminous Clockwise Snake Border Beam */}
-        <div ref={snakeRef} className="navbar-snake-beam" aria-hidden="true" />
+        <SearchButton />
+        <PlayButton />
+      </div>
 
-        {/* 1. Brand Logo */}
-        <motion.a
-          href="#"
-          className="nav-brand"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      <motion.div
+        className="navbar-dock-container"
+        /* --- Silky Apple 3D Entrance: Butter-Smooth Glide --- */
+        initial={{
+          opacity: 0,
+          y: -26,
+          scale: 0.96,
+          rotateX: -10,
+          rotateY: 6,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          rotateX: 0,
+          rotateY: 0,
+        }}
+        transition={{
+          duration: 0.88,
+          ease: [0.16, 1, 0.3, 1], // Apple luxury fluid deceleration
+          opacity: { duration: 0.5, ease: "easeOut" },
+        }}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transformStyle: "preserve-3d",
+          perspective: 1400,
+        }}
+      >
+        <motion.nav
+          ref={dockRef}
+          /* --- Rubber-band BEND transforms (active on drag) --- */
+          style={{
+            rotateX,
+            rotateZ,
+            y: translateY,
+            transformOrigin: "center center",
+            transformStyle: "preserve-3d",
+          }}
+          className={`navbar-dock glass-panel ${scrolled ? "dock-scrolled" : ""}`}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerLeave}
+          onPointerEnter={handlePointerEnter}
         >
-          <span className="gradient-gold brand-name">iyoush</span>
-        </motion.a>
+          {/* Luminous Clockwise Snake Border Beam */}
+          <div ref={snakeRef} className="navbar-snake-beam" aria-hidden="true" />
 
-        {/* 2. Navigation Links with Sliding Glass Hover Pill */}
-        <ul
-          className="nav-list"
-          onMouseLeave={() => setHoveredIndex(null)}
-        >
-          {navLinks.map((link, idx) => (
-            <li key={link.id} className="nav-item">
-              <a
-                href={link.href}
-                className={`nav-link ${hoveredIndex === idx ? "active-hover" : ""}`}
-                onMouseEnter={() => setHoveredIndex(idx)}
-              >
-                <span className="nav-link-label">{link.label}</span>
-                {hoveredIndex === idx && (
-                  <motion.div
-                    layoutId="navbar-hover-pill"
-                    className="nav-hover-pill"
-                    transition={{
-                      type: "spring",
-                      stiffness: 420,
-                      damping: 28,
-                    }}
-                  />
-                )}
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        {/* 3. "Connect" CTA with Micro-interactions */}
-        <motion.a
-          href="#contact"
-          className="glass-button nav-cta"
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        >
-          <span>Connect</span>
-          <motion.span
-            className="nav-cta-icon"
-            whileHover={{ x: 2, y: -2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 18 }}
+          {/* 1. Brand Logo (Click to drop 3D ID Badge) */}
+          <motion.button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              playTickSound();
+              updateBadgePosition();
+              setIsBadgeOpen((prev) => !prev);
+            }}
+            className="nav-brand nav-brand-btn"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            aria-label="Toggle ID Card Badge"
+            title="Click to view ID Badge"
           >
-            <Send size={12} />
-          </motion.span>
-        </motion.a>
-      </motion.nav>
+            <span className="gradient-gold brand-name">iyoush</span>
+          </motion.button>
+
+          {/* 2. Navigation Links with Sliding Glass Hover Pill */}
+          <ul
+            className="nav-list"
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            {navLinks.map((link, idx) => (
+              <li key={link.id} className="nav-item">
+                <a
+                  href={link.href}
+                  className={`nav-link ${hoveredIndex === idx ? "active-hover" : ""}`}
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                >
+                  <span className="nav-link-label">{link.label}</span>
+                  {hoveredIndex === idx && (
+                    <motion.div
+                      layoutId="navbar-hover-pill"
+                      className="nav-hover-pill"
+                      transition={{
+                        type: "spring",
+                        stiffness: 420,
+                        damping: 28,
+                      }}
+                    />
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* 3. "Connect" CTA with Micro-interactions */}
+          <motion.a
+            href="#contact"
+            className="glass-button nav-cta"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
+            <span>Connect</span>
+            <motion.span
+              className="nav-cta-icon"
+              whileHover={{ x: 2, y: -2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+            >
+              <Send size={12} />
+            </motion.span>
+          </motion.a>
+        </motion.nav>
+      </motion.div>
 
       {/* Action buttons placed outside navbar in the middle of the right space */}
       <div className="nav-extra-right">
-        <PlayButton />
         <ThemeToggle />
-        <SearchButton />
       </div>
+
+      {/* 3D Drop-down Lanyard ID Card Badge anchored in the Connect-Play gap */}
+      <IdBadge
+        isOpen={isBadgeOpen}
+        onClose={() => setIsBadgeOpen(false)}
+        anchorX={badgeX}
+      />
     </header>
   );
 }
