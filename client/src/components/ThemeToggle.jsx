@@ -48,22 +48,22 @@ export default function ThemeToggle() {
       {/* Figma Swatches & Circular Swap Arrows */}
       <div className="figma-theme-icon-wrap">
         <svg
-          width="26"
-          height="24"
-          viewBox="0 0 26 24"
+          width="24"
+          height="22"
+          viewBox="0 0 24 22"
           fill="none"
           className="figma-theme-icon"
           xmlns="http://www.w3.org/2000/svg"
         >
           {/* Bottom-Right Outline Swatch (Rendered behind) */}
           <rect
-            x="8"
-            y="8"
-            width="13.5"
-            height="13.5"
+            x="7.5"
+            y="7.5"
+            width="12"
+            height="12"
             rx="2.8"
             stroke={isDark ? "#ffffff" : "#18181b"}
-            strokeWidth="1.8"
+            strokeWidth="1.6"
             fill={isDark ? "#18181b" : "#ffffff"}
           />
 
@@ -71,31 +71,31 @@ export default function ThemeToggle() {
           <rect
             x="1.5"
             y="1.5"
-            width="13.5"
-            height="13.5"
+            width="12"
+            height="12"
             rx="2.8"
             fill={isDark ? "#ffffff" : "#18181b"}
           />
 
-          {/* Circular Swap Arrows in Top-Right */}
+          {/* Circular Swap Arrows nestled in top-right */}
           <motion.g
             className="figma-swap-arrows"
             animate={{ rotate: rotation }}
             transition={{ type: "spring", stiffness: 350, damping: 22 }}
-            style={{ transformOrigin: "19.8px 5.5px" }}
+            style={{ transformOrigin: "18.6px 4.2px" }}
           >
             {/* Top clockwise arc + arrowhead */}
             <path
-              d="M 16.6 4.3 C 17.3 2.7 18.5 1.9 20 1.9 C 21.7 1.9 23 3 23.3 4.8"
+              d="M 16.0 3.8 C 16.5 2.2 17.5 1.3 18.8 1.3 C 20.3 1.3 21.4 2.2 21.7 3.8"
               stroke={isHovered ? "#0b99ff" : isDark ? "#a1a1aa" : "#71717a"}
-              strokeWidth="1.3"
+              strokeWidth="1.25"
               strokeLinecap="round"
               fill="none"
             />
             <path
-              d="M 21.3 4.8 L 23.3 4.8 L 23.3 2.8"
+              d="M 19.8 3.8 L 21.7 3.8 L 21.7 1.9"
               stroke={isHovered ? "#0b99ff" : isDark ? "#a1a1aa" : "#71717a"}
-              strokeWidth="1.3"
+              strokeWidth="1.25"
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
@@ -103,16 +103,16 @@ export default function ThemeToggle() {
 
             {/* Bottom clockwise arc + arrowhead */}
             <path
-              d="M 23 6.7 C 22.3 8.3 21.1 9.1 19.6 9.1 C 17.9 9.1 16.6 8 16.3 6.2"
+              d="M 21.2 4.6 C 20.7 6.2 19.7 7.1 18.4 7.1 C 16.9 7.1 15.8 6.2 15.5 4.6"
               stroke={isHovered ? "#0b99ff" : isDark ? "#a1a1aa" : "#71717a"}
-              strokeWidth="1.3"
+              strokeWidth="1.25"
               strokeLinecap="round"
               fill="none"
             />
             <path
-              d="M 18.3 6.2 L 16.3 6.2 L 16.3 8.2"
+              d="M 17.4 4.6 L 15.5 4.6 L 15.5 6.5"
               stroke={isHovered ? "#0b99ff" : isDark ? "#a1a1aa" : "#71717a"}
-              strokeWidth="1.3"
+              strokeWidth="1.25"
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
